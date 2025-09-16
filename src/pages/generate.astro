@@ -1,0 +1,108 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Menu from "../Components/Menu.astro";
+---
+
+<Layout title="SVG Generator">
+    <Menu />
+    <main class="container mx-auto p-4">
+        <!-- Titre avec indicateur d'état -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold mb-2">SVG Generator</h1>
+            <div id="status-message" class="hidden alert"></div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-4">
+            <!-- Panneau de prévisualisation SVG -->
+            <div class="card bg-base-100 shadow-xl flex-1">
+                <div class="card-body">
+                    <h2 class="card-title">Preview</h2>
+                    <div class="divider"></div>
+                    <div class="flex items-center justify-center min-h-[400px]">
+                        <div
+                            id="svgcontainer"
+                            class="flex items-center justify-center w-full h-full"
+                        >
+                            <!-- SVG preview will be displayed here -->
+                            <div class="text-center text-base-content/50">
+                                <p>Enter a description and click Generate</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panneau de code SVG -->
+            <div class="card bg-neutral text-neutral-content flex-1">
+                <div class="card-body">
+                    <h2 class="card-title text-neutral-content">SVG Code</h2>
+                    <pre
+                        id="svgoutput"
+                        class="text-xs overflow-auto p-2 max-h-[400px] text-base-content rounded-lg">
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulaire -->
+        <div class="mt-6">
+            <form id="generator-form" class="form-control w-full">
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        id="prompt-input"
+                        placeholder="Enter your SVG description (e.g., car, house, tree)"
+                        class="input input-bordered flex-1"
+                    />
+                    <button
+                        type="button"
+                        id="generate-button"
+                        class="btn btn-primary"
+                    >
+                        <span id="button-text">Generate</span>
+                        <span id="button-loading" class="hidden">
+                            <span class="loading loading-spinner loading-sm"
+                            ></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</Layout>
+
+<script>
+    //@ts-nocheck
+
+    async function generateSVG(prompt) {
+        console.log("Generating SVG for prompt:", prompt);
+        const res = await fetch("/api/generateSVG", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+        });
+        const data = await res.json();
+        return data.svg;
+    }
+
+    async function handleSubmit() {
+        let prompt = "";
+        let svgCode = "";
+        const promptElement = document.getElementById("prompt-input");
+        prompt = promptElement ? promptElement.value : "";
+        console.log("submitted: ", prompt); // message affiché sur votre console d'inspecteur dans le navigateur
+        const svgcontainer = document.getElementById("svgcontainer");
+        let svgoutput = document.getElementById("svgoutput");
+        svgCode = await generateSVG(prompt);
+        console.log("svgCode: ", svgCode);
+        svgoutput.textContent = svgCode;
+        svgcontainer.innerHTML = svgCode;
+        svgcontainer.innerHTML =
+            svgCode || `<span class="loading loading-ring loading-xl"></span>`;
+        generateButton.disabled = false;
+    }
+    const generateButton = document.getElementById("generate-button");
+    if (generateButton) {
+        generateButton.addEventListener("click", handleSubmit);
+    }
+</script>

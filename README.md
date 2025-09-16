@@ -1,3 +1,3 @@
-- Nom:
-- Prenom:
+- Nom: WICKY
+- Prenom: Arthur
 - Netlify:
