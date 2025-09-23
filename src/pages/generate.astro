@@ -24,7 +24,7 @@ import Menu from "../Components/Menu.astro";
                             class="flex items-center justify-center w-full h-full"
                         >
                             <!-- SVG preview will be displayed here -->
-                            <div class="text-center text-base-content/50">
+                            <div class="text-center text-neutral-content">
                                 <p>Enter a description and click Generate</p>
                             </div>
                         </div>
@@ -38,7 +38,7 @@ import Menu from "../Components/Menu.astro";
                     <h2 class="card-title text-neutral-content">SVG Code</h2>
                     <pre
                         id="svgoutput"
-                        class="text-xs overflow-auto p-2 max-h-[400px] text-base-content rounded-lg">
+                        class="text-xs overflow-auto p-2 max-h-[400px] text-neutral-content rounded-lg">
                     </pre>
                 </div>
             </div>
@@ -54,17 +54,19 @@ import Menu from "../Components/Menu.astro";
                         placeholder="Enter your SVG description (e.g., car, house, tree)"
                         class="input input-bordered flex-1"
                     />
+
                     <button
                         type="button"
                         id="generate-button"
                         class="btn btn-primary"
                     >
                         <span id="button-text">Generate</span>
-                        <span id="button-loading" class="hidden">
-                            <span class="loading loading-spinner loading-sm"
-                            ></span>
                         </span>
                     </button>
+                    <button class="btn btn-secondary" id="edit-button"
+                        >Edit</button
+                    >
+                    <button class="flex btn" id="save-button">Save</button>
                 </div>
             </form>
         </div>
@@ -85,24 +87,47 @@ import Menu from "../Components/Menu.astro";
         return data.svg;
     }
 
+    let promptList = [
+        [
+            {
+                role: "user",
+                content: prompt,
+            },
+            {
+                role: "assistant",
+                content: aiResponse,
+            },
+        ],
+    ];
+
     async function handleSubmit() {
         let prompt = "";
-        let svgCode = "";
-        const promptElement = document.getElementById("prompt-input");
+        let aiResponse = "";
+        const promptElement = document.getElementById("user-prompt");
         prompt = promptElement ? promptElement.value : "";
-        console.log("submitted: ", prompt); // message affiché sur votre console d'inspecteur dans le navigateur
-        const svgcontainer = document.getElementById("svgcontainer");
-        let svgoutput = document.getElementById("svgoutput");
-        svgCode = await generateSVG(prompt);
-        console.log("svgCode: ", svgCode);
-        svgoutput.textContent = svgCode;
-        svgcontainer.innerHTML = svgCode;
-        svgcontainer.innerHTML =
-            svgCode || `<span class="loading loading-ring loading-xl"></span>`;
+        console.log("submitted: ", prompt);
+        // Réinitialiser la liste des prompts
+        promptList.length = 0;
+        promptList.push({ role: "user", content: prompt });
+        const svgContainer = document.getElementById("svg-container");
+        // Afficher un spinner
+        svgContainer.innerHTML = `<span class="loading loading-ring loading-xl"></span>`;
+        generateButton.disabled = true;
+        editButton.disabled = true;
+        let svgOutput = document.getElementById("svg-output");
+        // Appeler la fonction pour générer le SVG
+        aiResponse = await generateSVG(promptList);
+        // Extraire le SVG de la réponse
+        const svgMatch = aiResponse.content.match(/<svg[\s\S]*?<\/svg>/i);
+        aiResponse.content = svgMatch ? svgMatch[0] : "";
+        console.log("svgCode: ", aiResponse.content);
+        // Ajouter la réponse de l'IA à la liste des prompts
+        promptList.push(aiResponse);
+        // Afficher le SVG généré
+        svgOutput.textContent = aiResponse.content;
+        svgContainer.innerHTML = aiResponse.content;
+        // Réactiver les boutons
         generateButton.disabled = false;
-    }
-    const generateButton = document.getElementById("generate-button");
-    if (generateButton) {
-        generateButton.addEventListener("click", handleSubmit);
+        editButton.disabled = false;
     }
 </script>
