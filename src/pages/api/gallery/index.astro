@@ -1,0 +1,13 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import pb from "../../../utils/pb";
+import { Collections, type SvgRecord } from "../../../utils/pocketbase-types";
+
+const id = Astro.params.id;
+const svg: SvgRecord = await pb.collection(Collections.Svg).getOne(id);
+---
+
+<Layout>
+    
+
+</Layout>
