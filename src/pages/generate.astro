@@ -20,7 +20,7 @@ import Menu from "../Components/Menu.astro";
                     <div class="divider"></div>
                     <div class="flex items-center justify-center min-h-[400px]">
                         <div
-                            id="svgcontainer"
+                            id="svg-container"
                             class="flex items-center justify-center w-full h-full"
                         >
                             <!-- SVG preview will be displayed here -->
@@ -37,7 +37,7 @@ import Menu from "../Components/Menu.astro";
                 <div class="card-body">
                     <h2 class="card-title text-neutral-content">SVG Code</h2>
                     <pre
-                        id="svgoutput"
+                        id="svg-output"
                         class="text-xs overflow-auto p-2 max-h-[400px] text-neutral-content rounded-lg">
                     </pre>
                 </div>
@@ -50,7 +50,7 @@ import Menu from "../Components/Menu.astro";
                 <div class="flex gap-2">
                     <input
                         type="text"
-                        id="prompt-input"
+                        id="prompt"
                         placeholder="Enter your SVG description (e.g., car, house, tree)"
                         class="input input-bordered flex-1"
                     />
@@ -63,8 +63,8 @@ import Menu from "../Components/Menu.astro";
                         <span id="button-text">Generate</span>
                     </button>
                 </div>
-                <button class="btn btn-secondary" id="editButton">Edit</button>
-                <button class="flex btn" id="saveButton">Save</button>
+                <button class="btn btn-secondary" id="edit-button">Edit</button>
+                <button class="flex btn" id="save-button">Save</button>
             </form>
         </div>
     </main>
@@ -78,7 +78,7 @@ import Menu from "../Components/Menu.astro";
         const res = await fetch("/api/generateSVG", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt }),
+            body: JSON.stringify(prompt),
         });
         const data = await res.json();
         return data.svg;
@@ -89,18 +89,18 @@ import Menu from "../Components/Menu.astro";
     async function handleSubmit() {
         let prompt = "";
         let aiResponse = "";
-        const promptElement = document.getElementById("user-prompt");
+        const promptElement = document.getElementById("prompt");
         prompt = promptElement ? promptElement.value : "";
         console.log("submitted: ", prompt);
         // Réinitialiser la liste des prompts
         promptList.length = 0;
         promptList.push({ role: "user", content: prompt });
-        const svgContainer = document.getElementById("svgcontainer");
+        const svgContainer = document.getElementById("svg-container");
         // Afficher un spinner
         svgContainer.innerHTML = `<span class="loading loading-ring loading-xl"></span>`;
         generateButton.disabled = true;
         editButton.disabled = true;
-        let svgOutput = document.getElementById("svgoutput");
+        let svgOutput = document.getElementById("svg-output");
         // Appeler la fonction pour générer le SVG
         aiResponse = await generateSVG(promptList);
         // Extraire le SVG de la réponse
@@ -119,5 +119,40 @@ import Menu from "../Components/Menu.astro";
     const generateButton = document.getElementById("generate-button");
     if (generateButton) {
         generateButton.addEventListener("click", handleSubmit);
+    }
+
+    async function handleEdit() {
+        let prompt = "";
+        let aiResponse = "";
+        const promptElement = document.getElementById("prompt");
+        prompt = promptElement ? promptElement.value : "";
+        console.log("Prompt soumis : ", prompt);
+        // Ajout du prompt de l'utilisateur à la liste
+        promptList.push({ role: "user", content: prompt });
+        const svgContainer = document.getElementById("svg-container");
+        // Afficher un spinner de chargement
+        svgContainer.innerHTML += `<span class="loading loading-ring loading-xl"></span>`;
+        generateButton.disabled = true;
+        editButton.disabled = true;
+        let svgOutput = document.getElementById("svg-output");
+        // Appeler la fonction pour générer le SVG
+        aiResponse = await generateSVG(promptList);
+        // Extraire le SVG de la réponse
+        const svgMatch = aiResponse.content.match(/<svg[\s\S]*?<\/svg>/i);
+        aiResponse.content = svgMatch ? svgMatch[0] : "";
+        console.log("Code SVG généré : ", aiResponse.content);
+        // Ajouter la réponse de l'IA à la liste des prompts
+        promptList.push(aiResponse);
+        // Afficher le SVG généré
+        svgOutput.textContent = aiResponse.content;
+        svgContainer.innerHTML = aiResponse.content;
+        // Réactiver les boutons
+        generateButton.disabled = false;
+        editButton.disabled = false;
+        console.log("Historique des prompts : ", promptList);
+    }
+    const editButton = document.getElementById("edit-button");
+    if (editButton) {
+        editButton.addEventListener("click", handleEdit);
     }
 </script>
