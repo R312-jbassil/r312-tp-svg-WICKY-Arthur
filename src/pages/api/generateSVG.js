@@ -15,7 +15,12 @@ export const POST = async ({ request }) => {
     console.log(request);
 
     // Extraction des message du corps de la requête
-    const messages = await request.json();
+    let messages = await request.json();
+
+    // Vérifie que messages est bien un tableau
+    if (!Array.isArray(messages)) {
+        messages = [];
+    }
 
     // Initialisation du client OpenAI avec l'URL de base et le token d'API
     const client = new OpenAI({
