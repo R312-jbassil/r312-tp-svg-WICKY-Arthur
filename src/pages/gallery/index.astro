@@ -6,6 +6,11 @@ import Menu from "../../Components/Menu.astro";
 
 const svg = await pb.collection(Collections.Svg).getFullList();
 
+const user = Astro.locals.user; // Récupère l'utilisateur connecté
+const svgList = await pb.collection(Collections.Svg).getFullList({
+    sort: "-created", // Trie les SVGs du plus récent au plus ancien
+    filter: `user = "${user.id}"`, // Filtre pour n'afficher que les SVGs de l'utilisateur
+});
 ---
 
 <Layout>
@@ -18,11 +23,24 @@ const svg = await pb.collection(Collections.Svg).getFullList();
             <div
                 class="flex flex-col gap-4 w-full mb-20 overflow-y-auto flex-grow"
             >
-                {svg.map((item: SvgRecord) => (
-                    <div>
-                        <a href={`/gallery/${item.id}`}>{item.name}</a>
-                    </div>
-                ))}
+                {
+                    svg.map((item: SvgRecord) => (
+                        <div>
+                            <a href={`/gallery/${item.id}`}>{item.name}</a>
+                        </div>
+                    ))
+                }
+            </div>
+            <div>
+                <h1>SVG Créé par Vous</h1>
+                {
+                    svgList.map((item: SvgRecord) => (
+                        <div>
+                            <a href={`/gallery/${item.id}`}>{item.name}</a>
+                        </div>
+                    ))
+                }
             </div>
         </div>
+    </div>
 </Layout>

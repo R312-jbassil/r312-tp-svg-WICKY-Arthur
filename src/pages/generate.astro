@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Menu from "../Components/Menu.astro";
+const user = Astro.locals.user;
 ---
 
 <Layout title="SVG Generator">
@@ -166,17 +167,20 @@ import Menu from "../Components/Menu.astro";
         const data = await res.json();
         return data;
     }
+
+    const user = JSON.parse(localStorage.getItem("user"));
     if (saveButton) {
         saveButton.addEventListener("click", async () => {
-            const name = prompt("Entrez un nom pour le SVG :");
+            const name = prompt("Enter a name for the SVG:");
             const svgOutput =
                 document.getElementById("svg-output")?.textContent;
-            console.log("Sauvegarde du SVG : ", JSON.stringify(svgOutput));
+            console.log("Saving SVG: ", JSON.stringify(svgOutput));
 
-            const params = {
+            const params: Collection.Svg = {
                 nom: name,
                 code_svg: svgOutput || "<svg></svg>",
                 chat_history: JSON.stringify(promptList),
+                user: user.id,
             };
             await saveSVG(params);
         });
