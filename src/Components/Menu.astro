@@ -1,28 +1,31 @@
 ---
-
+import { ui } from "../i18n/ui.js";
+const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
 ---
 
 <div class="p-2 w-full py-8 px-32 font-bold shadow-md mb-4">
     <ul class="flex gap-4">
         <li>
-            <a href="/">Home</a>
+            <a href="/">{ui[locale].nav.home}</a>
         </li>
         <li>
-            <a href="/generate">Generator</a>
+            <a href="/generate">{ui[locale].nav.generator}</a>
         </li>
         <li>
-            <a href="/gallery">Gallery</a>
+            <a href="/gallery">{ui[locale].nav.gallery}</a>
         </li>
         <li>
-            <a href="/login">Login</a>
+            <a href="/login">{ui[locale].nav.login}</a>
         </li>
         <li>
             <form method="POST" action="/api/logout" class="m-0 p-0 ml-4">
-                <button type="submit" class="btn btn-primary">Logout</button>
+                <button type="submit" class="btn btn-primary"
+                    >{ui[locale].nav.logout}</button
+                >
             </form>
         </li>
         <li>
-            <a href="/signup">Signup</a>
+            <a href="/signup">{ui[locale].nav.signup}</a>
         </li>
     </ul>
 </div>

@@ -3,7 +3,9 @@ import Layout from "../../layouts/Layout.astro";
 import pb from "../../utils/pb";
 import { Collections, type SvgRecord } from "../../utils/pocketbase-types";
 import Menu from "../../Components/Menu.astro";
+import { ui } from "../../i18n/ui.js";
 
+const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
 const svg = await pb.collection(Collections.Svg).getFullList();
 
 const user = Astro.locals.user; // Récupère l'utilisateur connecté
@@ -13,12 +15,12 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
 });
 ---
 
-<Layout>
+<Layout title={ui[locale].gallery.title}>
     <Menu />
-    <h1 class="text-3xl font-bold p-12">Gallerie</h1>
+    <h1 class="text-3xl font-bold p-12">{ui[locale].gallery.title}</h1>
     <div class="card bg-base-100 shadow-xl p-20">
         <div class="card-body">
-            <h2 class="card-title">Preview</h2>
+            <h2 class="card-title">{ui[locale].gallery.preview}</h2>
 
             <div
                 class="flex flex-col gap-4 w-full mb-20 overflow-y-auto flex-grow"
@@ -32,7 +34,7 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
                 }
             </div>
             <div>
-                <h1>SVG Créé par Vous</h1>
+                <h1>{ui[locale].gallery.yourCreations}</h1>
                 {
                     svgList.map((item: SvgRecord) => (
                         <div>

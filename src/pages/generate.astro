@@ -1,15 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Menu from "../Components/Menu.astro";
+import { ui } from "../i18n/ui.js";
+
+const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
 const user = Astro.locals.user;
 ---
 
-<Layout title="SVG Generator">
+<Layout title={ui[locale].generator.title}>
     <Menu />
     <main class="container mx-auto p-4">
         <!-- Titre avec indicateur d'état -->
         <div class="text-center mb-6">
-            <h1 class="text-3xl font-bold mb-2">SVG Generator</h1>
+            <h1 class="text-3xl font-bold mb-2">
+                {ui[locale].generator.title}
+            </h1>
             <div id="status-message" class="hidden alert"></div>
         </div>
 
@@ -17,7 +22,7 @@ const user = Astro.locals.user;
             <!-- Panneau de prévisualisation SVG -->
             <div class="card bg-base-100 shadow-xl flex-1">
                 <div class="card-body">
-                    <h2 class="card-title">Preview</h2>
+                    <h2 class="card-title">{ui[locale].generator.preview}</h2>
                     <div class="divider"></div>
                     <div class="flex items-center justify-center min-h-[400px]">
                         <div
@@ -26,7 +31,7 @@ const user = Astro.locals.user;
                         >
                             <!-- SVG preview will be displayed here -->
                             <div class="text-center text-neutral-content">
-                                <p>Enter a description and click Generate</p>
+                                <p>{ui[locale].generator.enterDescription}</p>
                             </div>
                         </div>
                     </div>
@@ -36,7 +41,9 @@ const user = Astro.locals.user;
             <!-- Panneau de code SVG -->
             <div class="card bg-neutral text-neutral-content flex-1">
                 <div class="card-body">
-                    <h2 class="card-title text-neutral-content">SVG Code</h2>
+                    <h2 class="card-title text-neutral-content">
+                        {ui[locale].generator.svgCode}
+                    </h2>
                     <pre
                         id="svg-output"
                         class="text-xs overflow-auto p-2 max-h-[400px] text-neutral-content rounded-lg">
@@ -52,7 +59,7 @@ const user = Astro.locals.user;
                     <input
                         type="text"
                         id="prompt"
-                        placeholder="Enter your SVG description (e.g., car, house, tree)"
+                        placeholder={ui[locale].generator.promptPlaceholder}
                         class="input input-bordered flex-1"
                     />
 
@@ -61,17 +68,23 @@ const user = Astro.locals.user;
                         id="generate-button"
                         class="btn btn-primary"
                     >
-                        <span id="button-text">Generate</span>
+                        <span id="button-text"
+                            >{ui[locale].generator.generateButton}</span
+                        >
                     </button>
                 </div>
-                <button class="btn btn-secondary" id="edit-button">Edit</button>
-                <button class="flex btn" id="save-button">Save</button>
+                <button class="btn btn-secondary" id="edit-button"
+                    >{ui[locale].generator.editButton}</button
+                >
+                <button class="flex btn" id="save-button"
+                    >{ui[locale].generator.saveButton}</button
+                >
             </form>
         </div>
     </main>
 </Layout>
 
-<script>
+<script define:vars={{ translations: ui[locale].generator }}>
     //@ts-nocheck
 
     async function generateSVG(prompt) {
@@ -171,29 +184,12 @@ const user = Astro.locals.user;
     const user = JSON.parse(localStorage.getItem("user"));
     if (saveButton) {
         saveButton.addEventListener("click", async () => {
-            const name = prompt("Enter a name for the SVG:");
-            const svgOutput =
-                document.getElementById("svg-output")?.textContent;
-            console.log("Saving SVG: ", JSON.stringify(svgOutput));
-
-            const params: Collection.Svg = {
-                nom: name,
-                code_svg: svgOutput || "<svg></svg>",
-                chat_history: JSON.stringify(promptList),
-                user: user.id,
-            };
-            await saveSVG(params);
-        });
-    }
-
-    if (saveButton) {
-        saveButton.addEventListener("click", async () => {
             // Demande du nom du SVG à l'utilisateur
-            const name = prompt("Donnez un nom à votre création :");
+            const name = prompt(translations.saveName);
             const svgOutput =
                 document.getElementById("svg-output")?.textContent;
             console.log(
-                "Préparation de la sauvegarde :",
+                "Préparation de la sauvegarde:",
                 JSON.stringify(svgOutput),
             );
 
@@ -201,15 +197,16 @@ const user = Astro.locals.user;
             const params = {
                 name: name,
                 code_svg: svgOutput || "<svg></svg>", // SVG par défaut si vide
-                chat_history: JSON.stringify(promptList), // Historique des échanges
+                chat_history: promptList, // Historique des échanges
+                user: user ? user.id : null,
             };
 
             // Sauvegarde et gestion de la réponse
             const result = await saveSVG(params);
             if (result.success) {
-                alert("SVG sauvegardé avec succès !");
+                alert(translations.saveSuccess);
             } else {
-                alert("Erreur lors de la sauvegarde : " + result.error);
+                alert(translations.saveError + result.error);
             }
         });
     }
