@@ -1,0 +1,116 @@
+---
+
+---
+
+<html lang="en" data-theme="light">
+    <head>
+        <title>Signup</title>
+        <meta name="viewport" content="width=device-width" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@3.8.0/dist/full.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="min-h-screen flex items-center justify-center bg-base-200">
+        <div class="card w-full max-w-md shadow-xl bg-base-100">
+            <div class="card-body">
+                <h1 class="card-title text-3xl mb-4 justify-center">
+                    Creer un compte
+                </h1>
+                <!-- Formulaire d'inscription -->
+                <form id="signup-form" class="flex flex-col gap-4">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Nom complet"
+                        required
+                        class="input input-bordered"
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                        class="input input-bordered"
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Mot de passe"
+                        required
+                        class="input input-bordered"
+                    />
+                    <input
+                        type="password"
+                        name="passwordConfirm"
+                        placeholder="Confirmer le mot de passe"
+                        required
+                        class="input input-bordered"
+                    />
+                    <button type="submit" class="btn btn-primary w-full"
+                        >S'inscrire</button
+                    >
+                </form>
+                <!-- Zone d'affichage du statut -->
+                <p id="status" class="mt-4 text-center text-error"></p>
+                <div class="text-center mt-4">
+                    <p>Deja un compte?</p>
+                    <a href="/login" class="text-primary hover:underline"
+                        >Se connecter</a
+                    >
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    //@ts-nocheck
+    const form = document.getElementById("signup-form");
+    const status = document.getElementById("status");
+
+    // Gestion de la soumission du formulaire
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        // Vérification que les mots de passe correspondent
+        if (formData.get("password") !== formData.get("passwordConfirm")) {
+            status.textContent = "❌ Les mots de passe ne correspondent pas";
+            return;
+        }
+
+        // Envoi des informations au serveur via l'API /api/signup
+        try {
+            const res = await fetch("/api/signup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: formData.get("name"),
+                    email: formData.get("email"),
+                    password: formData.get("password"),
+                }),
+            });
+
+            // Traitement de la réponse
+            if (res.ok) {
+                status.textContent = "✅ Compte créé avec succès !";
+                status.className = "mt-4 text-center text-success";
+
+                // Redirection vers la page de connexion après un court délai
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 1500);
+            } else {
+                const errorData = await res.json();
+                status.textContent = `❌ Erreur: ${errorData.message || "Impossible de créer le compte"}`;
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'inscription:", error);
+            status.textContent =
+                "❌ Une erreur est survenue lors de l'inscription";
+        }
+    });
+</script>
