@@ -23,6 +23,10 @@ export const onRequest = async (context, next) => {
         if (context.url.pathname !== '/login' && context.url.pathname !== '/')
             return Response.redirect(new URL('/login', context.url), 303);
     }
+
+
+    //Partie LANGUE//
+
     // Cette fonction middleware s'exécute à chaque requête.
     // context = infos de la requête (URL, cookies, méthode...)
     // next() = continue le traitement normal (afficher la page demandée)
