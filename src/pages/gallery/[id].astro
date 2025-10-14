@@ -14,13 +14,17 @@ console.log({ "svg.chat_history": svg.chat_history });
 <Layout title={svg.name}>
     <Menu />
     <main class="container mx-auto p-4">
-        <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-120px)]">
-            <!-- Panneau de prévisualisation SVG (gauche) -->
+        <div class="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-200px)]">
+            <!-- Panneau de prévisualisation SVG (gauche/haut sur mobile) -->
             <div class="card bg-base-100 shadow-xl flex-1">
-                <div class="card-body">
-                    <h2 class="card-title">{ui[locale].details.preview}</h2>
-                    <div class="divider"></div>
-                    <div class="flex justify-center items-center min-h-[400px]">
+                <div class="card-body p-4 sm:p-6">
+                    <h2 class="card-title text-lg sm:text-xl">
+                        {ui[locale].details.preview}
+                    </h2>
+                    <div class="divider my-2"></div>
+                    <div
+                        class="flex justify-center items-center min-h-[250px] sm:min-h-[400px]"
+                    >
                         <div
                             set:html={svg.code_svg}
                             id="svg-container"
@@ -29,15 +33,16 @@ console.log({ "svg.chat_history": svg.chat_history });
                     </div>
                 </div>
             </div>
-            <!-- Panneau de conversation (droite) -->
+
+            <!-- Panneau de conversation (droite/bas sur mobile) -->
             <div class="card bg-accent shadow-xl flex-1">
                 <div class="card-body p-4 flex flex-col">
-                    <h2 class="card-title justify-center">
+                    <h2 class="card-title justify-center text-lg sm:text-xl">
                         {ui[locale].details.conversation}
                     </h2>
                     <div
                         id="chat-history"
-                        class="overflow-y-auto flex-grow mb-20"
+                        class="overflow-y-auto flex-grow mb-20 p-2 sm:p-4"
                     >
                         {
                             Array.isArray(svg.chat_history) &&
@@ -51,9 +56,9 @@ console.log({ "svg.chat_history": svg.chat_history });
                                             class={`chat ${msg.role === "user" ? "chat-start" : "chat-end"}`}
                                         >
                                             <div
-                                                class={`chat-bubble ${msg.role === "user" ? "bg-primary text-primary-content" : "bg-secondary text-secondary-content"}`}
+                                                class={`chat-bubble ${msg.role === "user" ? "bg-primary text-primary-content" : "bg-secondary text-secondary-content"} text-xs sm:text-sm`}
                                             >
-                                                <pre class="overflow-x-auto max-w-full break-words text-sm">
+                                                <pre class="overflow-x-auto max-w-[250px] sm:max-w-[350px] md:max-w-full break-words text-xs sm:text-sm">
                                                     {msg.content}
                                                 </pre>
                                             </div>
@@ -70,11 +75,10 @@ console.log({ "svg.chat_history": svg.chat_history });
                             )
                         }
                     </div>
-                    <div class="divider"></div>
 
                     <form
                         id="input-prompt-form"
-                        class="flex flex-col gap-2 w-full absolute bottom-0 left-0 right-0 bg-base-300 p-4"
+                        class="flex flex-col gap-2 w-full absolute bottom-0 left-0 right-0 bg-base-300 p-3 sm:p-4"
                         method="POST"
                         autocomplete="off"
                     >
@@ -89,11 +93,13 @@ console.log({ "svg.chat_history": svg.chat_history });
                                 id="prompt-input"
                                 name="editPrompt"
                                 type="text"
-                                class="input flex-grow"
+                                class="input input-bordered flex-grow text-sm sm:text-base"
                                 placeholder={ui[locale].details
                                     .promptPlaceholder}
                             />
-                            <button class="btn btn-primary" type="submit"
+                            <button
+                                class="btn btn-primary btn-sm sm:btn-md"
+                                type="submit"
                                 >{ui[locale].details.editButton}</button
                             >
                         </div>
@@ -103,7 +109,6 @@ console.log({ "svg.chat_history": svg.chat_history });
         </div>
     </main>
 </Layout>
-
 <script>
     //@ts-nocheck
     const form = document.getElementById("input-prompt-form");

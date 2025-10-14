@@ -1,3 +1,4 @@
 - Nom: WICKY
 - Prenom: Arthur
 - Netlify:
+- Fonctionnalités ajoutées : Personnalisation DaisyUI, page signup, téléchargement des svg sauvegardés, responsive, 

@@ -1,10 +1,12 @@
 ---
 import { ui } from "../i18n/ui.js";
 const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
+const user = Astro.locals.user;
 ---
 
-<div class="navbar bg-base-200 shadow-md mb-4">
+<div class="navbar bg-base-200 shadow-md mb-4 px-2 sm:px-4 lg:px-8">
     <div class="navbar-start">
+        <!-- Menu hamburger - visible uniquement sur mobile -->
         <div class="dropdown">
             <label tabindex="0" class="btn btn-ghost lg:hidden">
                 <svg
@@ -24,30 +26,98 @@ const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
                 tabindex="0"
                 class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
             >
-                <li><a href="/">{ui[locale].nav.home}</a></li>
                 <li><a href="/generate">{ui[locale].nav.generator}</a></li>
                 <li><a href="/gallery">{ui[locale].nav.gallery}</a></li>
+                <li><a href="/signup">{ui[locale].nav.signup}</a></li>
+                <!-- Toujours affiché -->
+
+                <!-- Liens d'authentification conditionnels dans le menu hamburger -->
+                {
+                    !user && (
+                        <li>
+                            <a href="/login">{ui[locale].nav.login}</a>
+                        </li>
+                    )
+                }
+                {
+                    user && (
+                        <li>
+                            <form method="POST" action="/api/logout">
+                                <button type="submit" class="w-full text-left">
+                                    {ui[locale].nav.logout}
+                                </button>
+                            </form>
+                        </li>
+                    )
+                }
             </ul>
         </div>
-        <a href="/" class="btn btn-ghost normal-case text-xl">SVG Generator</a>
+
+        <!-- Logo du site -->
+        <a
+            href="/"
+            class="btn btn-ghost normal-case text-base sm:text-lg lg:text-xl"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6 mr-2 hidden sm:inline-block"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                ></path>
+            </svg>
+            SVG Generator
+        </a>
     </div>
+
+    <!-- Menu central - visible uniquement sur desktop -->
     <div class="navbar-center hidden lg:flex">
         <ul class="menu menu-horizontal px-1">
             <li><a href="/generate">{ui[locale].nav.generator}</a></li>
             <li><a href="/gallery">{ui[locale].nav.gallery}</a></li>
         </ul>
     </div>
-    <div class="navbar-end gap-2">
-        <a href="/login" class="btn btn-ghost">{ui[locale].nav.login}</a>
-        <a href="/signup" class="btn btn-ghost">{ui[locale].nav.signup}</a>
-        <form method="POST" action="/api/logout" class="m-0">
-            <button type="submit" class="btn btn-primary"
-                >{ui[locale].nav.logout}</button
+
+    <!-- Menu de droite -->
+    <div class="navbar-end">
+        <!-- Liens d'authentification - visibles uniquement sur desktop -->
+        <div class="hidden sm:flex items-center gap-2">
+            <!-- Le lien signup toujours affiché -->
+            <a href="/signup" class="btn btn-primary btn-sm sm:btn-md"
+                >{ui[locale].nav.signup}</a
             >
-        </form>
-        <div class="dropdown dropdown-end z-10">
-            <label tabindex="0" class="btn btn-sm btn-ghost m-1">
-                {ui[locale].nav.language}
+
+            {
+                !user && (
+                    <a href="/login" class="btn btn-ghost btn-sm sm:btn-md">
+                        {ui[locale].nav.login}
+                    </a>
+                )
+            }
+            {
+                user && (
+                    <form method="POST" action="/api/logout" class="m-0">
+                        <button
+                            type="submit"
+                            class="btn btn-ghost btn-sm sm:btn-md"
+                        >
+                            {ui[locale].nav.logout}
+                        </button>
+                    </form>
+                )
+            }
+        </div>
+
+        <!-- Sélecteur de langue - ajusté pour être responsive -->
+        <div class="dropdown dropdown-end ml-2">
+            <label tabindex="0" class="btn btn-sm m-1">
+                <span class="hidden sm:inline">{ui[locale].nav.language}</span>
                 <span class="badge badge-sm">{locale.toUpperCase()}</span>
             </label>
             <form

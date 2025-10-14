@@ -9,12 +9,12 @@ const user = Astro.locals.user;
 
 <Layout title={ui[locale].generator.title}>
     <Menu />
-    <main class="container mx-auto p-4">
+    <main class="container mx-auto px-4">
         <!-- Titre avec indicateur d'état -->
-        <div class="hero bg-base-200 mb-6 py-6">
+        <div class="hero bg-base-200 mb-4 sm:mb-6 py-4 sm:py-6 rounded-box">
             <div class="hero-content text-center">
                 <div class="max-w-md">
-                    <h1 class="text-3xl font-bold">
+                    <h1 class="text-2xl sm:text-3xl font-bold">
                         {ui[locale].generator.title}
                     </h1>
                     <div id="status-message" class="hidden alert mt-4"></div>
@@ -25,12 +25,14 @@ const user = Astro.locals.user;
         <div class="flex flex-col lg:flex-row gap-4">
             <!-- Panneau de prévisualisation SVG -->
             <div class="card bg-base-100 shadow-xl flex-1">
-                <div class="card-body">
-                    <h2 class="card-title">{ui[locale].generator.preview}</h2>
-                    <div class="divider"></div>
+                <div class="card-body p-4 sm:p-6">
+                    <h2 class="card-title text-lg sm:text-xl">
+                        {ui[locale].generator.preview}
+                    </h2>
+                    <div class="divider my-2"></div>
                     <div
                         id="svg-container"
-                        class="flex justify-center items-center min-h-[400px]"
+                        class="flex justify-center items-center min-h-[250px] sm:min-h-[300px] md:min-h-[400px]"
                     >
                         <div class="text-center text-neutral-content">
                             <p>{ui[locale].generator.enterDescription}</p>
@@ -39,14 +41,18 @@ const user = Astro.locals.user;
                 </div>
             </div>
 
-            <!-- Panneau de code SVG -->
+            <!-- Panneau de code SVG (s'affiche sous sur mobile) -->
             <div class="card bg-neutral text-neutral-content flex-1">
-                <div class="card-body">
-                    <h2 class="card-title">{ui[locale].generator.svgCode}</h2>
-                    <div class="mockup-code bg-base-300">
+                <div class="card-body p-4 sm:p-6">
+                    <h2 class="card-title text-lg sm:text-xl">
+                        {ui[locale].generator.svgCode}
+                    </h2>
+                    <div
+                        class="mockup-code bg-base-300 max-h-[200px] sm:max-h-[300px] md:max-h-[400px]"
+                    >
                         <pre
                             id="svg-output"
-                            class="px-4 py-2 max-h-[400px] overflow-auto text-black">
+                            class="px-4 py-2 overflow-auto text-black text-xs sm:text-sm">
                         </pre>
                     </div>
                 </div>
@@ -54,10 +60,10 @@ const user = Astro.locals.user;
         </div>
 
         <!-- Formulaire -->
-        <div class="card bg-base-200 mt-6">
-            <div class="card-body">
+        <div class="card bg-base-200 mt-4 sm:mt-6">
+            <div class="card-body p-4 sm:p-6">
                 <form id="generator-form" class="form-control">
-                    <div class="input-group">
+                    <div class="flex flex-col sm:flex-row gap-2">
                         <input
                             type="text"
                             id="prompt"
@@ -73,10 +79,14 @@ const user = Astro.locals.user;
                         </button>
                     </div>
                     <div class="flex flex-wrap gap-2 mt-4">
-                        <button class="btn btn-secondary" id="edit-button"
+                        <button
+                            class="btn btn-secondary flex-1 sm:flex-none"
+                            id="edit-button"
                             >{ui[locale].generator.editButton}</button
                         >
-                        <button class="btn btn-accent" id="save-button"
+                        <button
+                            class="btn btn-accent flex-1 sm:flex-none"
+                            id="save-button"
                             >{ui[locale].generator.saveButton}</button
                         >
                     </div>

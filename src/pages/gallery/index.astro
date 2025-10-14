@@ -45,16 +45,43 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
                                     <figure class="bg-base-200 rounded-box p-2 aspect-square flex items-center justify-center">
                                         <div
                                             set:html={svg.code_svg}
-                                            class="max-w-full max-h-full"
+                                            class="max-w-full max-h-full svg-container"
+                                            data-svg-id={svg.id}
+                                            data-svg-name={svg.name || svg.nom}
                                         />
                                     </figure>
-                                    <div class="card-actions justify-end">
-                                        <a
-                                            href={`/gallery/${svg.id}`}
-                                            class="btn btn-secondary btn-sm btn-block"
-                                        >
-                                            {ui[locale].gallery.viewDetails}
-                                        </a>
+                                    <div class="card-actions justify-end mt-2">
+                                        <div class="flex w-full gap-2">
+                                            <a
+                                                href={`/gallery/${svg.id}`}
+                                                class="btn btn-secondary btn-sm flex-1"
+                                            >
+                                                {ui[locale].gallery.viewDetails}
+                                            </a>
+                                            <button
+                                                class="btn btn-primary btn-sm flex-1 download-svg"
+                                                data-svg-id={svg.id}
+                                                data-svg-name={
+                                                    svg.name || svg.nom
+                                                }
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-5 w-5"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    stroke="currentColor"
+                                                >
+                                                    <path
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                                    />
+                                                </svg>
+                                                Télécharger
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -63,7 +90,7 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
                 </div>
 
                 <div class="divider">{ui[locale].gallery.yourCreations}</div>
-                <!-- Utilisez une seule boucle map pour afficher les SVGs -->
+                <!-- Section "Vos créations" avec une seule boucle -->
                 <div
                     class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
                 >
@@ -76,17 +103,40 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
                                     </h2>
                                     <figure class="w-full h-48 mb-4 bg-base-200 rounded-box flex items-center justify-center overflow-hidden">
                                         <div
-                                            class="max-w-full max-h-full"
+                                            class="max-w-full max-h-full svg-container"
                                             set:html={svg.code_svg}
+                                            data-svg-id={svg.id}
+                                            data-svg-name={svg.name || svg.nom}
                                         />
                                     </figure>
-                                    <div class="card-actions mt-auto w-full flex justify-center">
+                                    <div class="card-actions mt-auto w-full gap-2">
                                         <a
                                             href={`/gallery/${svg.id}`}
-                                            class="btn btn-secondary btn-outline w-full"
+                                            class="btn btn-secondary btn-outline w-1/2"
                                         >
                                             {ui[locale].gallery.viewDetails}
                                         </a>
+                                        <button
+                                            class="btn btn-primary btn-outline w-1/2 download-svg"
+                                            data-svg-id={svg.id}
+                                            data-svg-name={svg.name || svg.nom}
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                                />
+                                            </svg>
+                                            Télécharger
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -97,3 +147,69 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
         </div>
     </div>
 </Layout>
+
+<script>
+    // Fonction pour télécharger un SVG
+    function downloadSVG(svgId, svgName) {
+        // Trouver le conteneur SVG correspondant
+        const container = document.querySelector(
+            `.svg-container[data-svg-id="${svgId}"]`,
+        );
+        if (!container) return;
+
+        // Extraire le code SVG
+        const svgElement = container.querySelector("svg");
+        if (!svgElement) return;
+
+        // Cloner le SVG pour éviter de modifier celui affiché
+        const svgClone = svgElement.cloneNode(true);
+
+        // Récupérer les dimensions originales
+        const viewBox = svgClone.getAttribute("viewBox");
+
+        // S'assurer que le SVG a une largeur et une hauteur définies
+        if (!svgClone.hasAttribute("width") && viewBox) {
+            const viewBoxValues = viewBox.split(" ");
+            if (viewBoxValues.length >= 4) {
+                svgClone.setAttribute("width", viewBoxValues[2]);
+                svgClone.setAttribute("height", viewBoxValues[3]);
+            } else {
+                svgClone.setAttribute("width", "800");
+                svgClone.setAttribute("height", "600");
+            }
+        }
+
+        // Créer un Blob avec le contenu SVG
+        const svgData = new XMLSerializer().serializeToString(svgClone);
+        const blob = new Blob([svgData], { type: "image/svg+xml" });
+
+        // Créer un URL pour le Blob
+        const url = URL.createObjectURL(blob);
+
+        // Créer un lien de téléchargement et le déclencher
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${svgName || "svg-download"}.svg`;
+        document.body.appendChild(link);
+        link.click();
+
+        // Nettoyer
+        setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 100);
+    }
+
+    // Ajouter les écouteurs d'événements pour tous les boutons de téléchargement
+    document.addEventListener("DOMContentLoaded", () => {
+        const downloadButtons = document.querySelectorAll(".download-svg");
+
+        downloadButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const svgId = button.getAttribute("data-svg-id");
+                const svgName = button.getAttribute("data-svg-name");
+                downloadSVG(svgId, svgName);
+            });
+        });
+    });
+</script>
