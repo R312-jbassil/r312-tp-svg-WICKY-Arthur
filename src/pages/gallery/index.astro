@@ -38,6 +38,12 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
                 {
                     svgList.map((item: SvgRecord) => (
                         <div>
+                            <div>
+                                <div
+                                    class="max-w-full max-h-full"
+                                    set:html={svg.code_svg}
+                                />
+                            </div>
                             <a href={`/gallery/${item.id}`}>{item.name}</a>
                         </div>
                     ))
