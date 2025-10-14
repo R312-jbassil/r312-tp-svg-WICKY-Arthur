@@ -17,37 +17,82 @@ const svgList = await pb.collection(Collections.Svg).getFullList({
 
 <Layout title={ui[locale].gallery.title}>
     <Menu />
-    <h1 class="text-3xl font-bold p-12">{ui[locale].gallery.title}</h1>
-    <div class="card bg-base-100 shadow-xl p-20">
-        <div class="card-body">
-            <h2 class="card-title">{ui[locale].gallery.preview}</h2>
+    <div class="hero bg-base-200 py-12">
+        <div class="hero-content text-center">
+            <h1 class="text-5xl font-bold">{ui[locale].gallery.title}</h1>
+        </div>
+    </div>
 
-            <div
-                class="flex flex-col gap-4 w-full mb-20 overflow-y-auto flex-grow"
-            >
-                {
-                    svg.map((item: SvgRecord) => (
-                        <div>
-                            <a href={`/gallery/${item.id}`}>{item.name}</a>
-                        </div>
-                    ))
-                }
-            </div>
-            <div>
-                <h1>{ui[locale].gallery.yourCreations}</h1>
-                {
-                    svgList.map((item: SvgRecord) => (
-                        <div>
-                            <div>
-                                <div
-                                    class="max-w-full max-h-full"
-                                    set:html={svg.code_svg}
-                                />
+    <div class="container mx-auto p-4">
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl">
+                    {ui[locale].gallery.preview}
+                </h2>
+
+                <div class="divider"></div>
+
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+                >
+                    {
+                        svgList.map((svg) => (
+                            <div class="card bg-base-100 shadow-md hover:shadow-xl">
+                                <div class="card-body p-4">
+                                    <h3 class="card-title text-secondary justify-center">
+                                        {svg.name || svg.nom}
+                                    </h3>
+                                    <figure class="bg-base-200 rounded-box p-2 aspect-square flex items-center justify-center">
+                                        <div
+                                            set:html={svg.code_svg}
+                                            class="max-w-full max-h-full"
+                                        />
+                                    </figure>
+                                    <div class="card-actions justify-end">
+                                        <a
+                                            href={`/gallery/${svg.id}`}
+                                            class="btn btn-secondary btn-sm btn-block"
+                                        >
+                                            {ui[locale].gallery.viewDetails}
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <a href={`/gallery/${item.id}`}>{item.name}</a>
-                        </div>
-                    ))
-                }
+                        ))
+                    }
+                </div>
+
+                <div class="divider">{ui[locale].gallery.yourCreations}</div>
+                <!-- Utilisez une seule boucle map pour afficher les SVGs -->
+                <div
+                    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+                >
+                    {
+                        svgList.map((svg: SvgRecord) => (
+                            <div class="card bg-base-100 shadow-xl flex flex-col items-center transition-transform hover:scale-105">
+                                <div class="card-body w-full flex flex-col items-center p-4">
+                                    <h2 class="card-title text-2xl mb-2 text-center text-secondary">
+                                        {svg.name || svg.nom}
+                                    </h2>
+                                    <figure class="w-full h-48 mb-4 bg-base-200 rounded-box flex items-center justify-center overflow-hidden">
+                                        <div
+                                            class="max-w-full max-h-full"
+                                            set:html={svg.code_svg}
+                                        />
+                                    </figure>
+                                    <div class="card-actions mt-auto w-full flex justify-center">
+                                        <a
+                                            href={`/gallery/${svg.id}`}
+                                            class="btn btn-secondary btn-outline w-full"
+                                        >
+                                            {ui[locale].gallery.viewDetails}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
         </div>
     </div>

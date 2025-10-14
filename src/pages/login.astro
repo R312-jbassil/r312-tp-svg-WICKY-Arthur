@@ -1,4 +1,5 @@
 ---
+import Layout from "../layouts/Layout.astro";
 if (Astro.locals.user) {
     // Si l'utilisateur est déjà connecté, on le redirige vers la page d'accueil
     return Astro.redirect("/");
@@ -7,49 +8,62 @@ import { ui } from "../i18n/ui.js";
 const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
 ---
 
-<html lang={locale} data-theme="light">
-    <head>
-        <title>{ui[locale].login.title}</title>
-        <meta name="viewport" content="width=device-width" />
-        <link
-            href="https://cdn.jsdelivr.net/npm/daisyui@3.8.0/dist/full.css"
-            rel="stylesheet"
-            type="text/css"
-        />
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="min-h-screen flex items-center justify-center bg-base-200">
-        <div class="card w-full max-w-md shadow-xl bg-base-100">
-            <div class="card-body">
-                <h1 class="card-title text-3xl mb-4 justify-center">
-                    {ui[locale].login.title}
-                </h1>
-                <!-- Formulaire de connexion -->
-                <form id="login-form" class="flex flex-col gap-4">
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder={ui[locale].login.email}
-                        required
-                        class="input input-bordered"
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder={ui[locale].login.password}
-                        required
-                        class="input input-bordered"
-                    />
-                    <button type="submit" class="btn btn-primary w-full"
-                        >{ui[locale].login.loginButton}</button
-                    >
-                </form>
-                <!-- Zone d'affichage du statut -->
-                <p id="status" class="mt-4 text-center text-error"></p>
+<Layout>
+    <div class="hero min-h-screen">
+        <div class="hero-content flex-col">
+            <div class="text-center">
+                <h1 class="text-5xl font-bold">{ui[locale].login.title}</h1>
+            </div>
+            <div
+                class="card flex-shrink-0 w-full max-w-md shadow-2xl bg-base-100"
+            >
+                <div class="card-body">
+                    <form id="login-form" class="form-control">
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text"
+                                    >{ui[locale].login.email}</span
+                                >
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder={ui[locale].login.email}
+                                required
+                                class="input input-bordered"
+                            />
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text"
+                                    >{ui[locale].login.password}</span
+                                >
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder={ui[locale].login.password}
+                                required
+                                class="input input-bordered"
+                            />
+                        </div>
+                        <div class="form-control mt-6">
+                            <button type="submit" class="btn btn-primary"
+                                >{ui[locale].login.loginButton}</button
+                            >
+                        </div>
+                    </form>
+                    <div id="status" class="mt-4 text-center text-error"></div>
+                    <div class="text-center mt-4">
+                        <a href="/signup" class="link link-hover"
+                            >Créer un compte</a
+                        >
+                    </div>
+                </div>
             </div>
         </div>
-    </body>
-</html>
+    </div>
+</Layout>
 
 <script>
     //@ts-nocheck
