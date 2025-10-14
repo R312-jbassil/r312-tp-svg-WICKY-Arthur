@@ -33,7 +33,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22045
         source: "dist/*"
-        target: "/var/www/svg/"
+        target: "/var/www/svg"
         strip_components: 1
         rm: false
         overwrite: true
