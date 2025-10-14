@@ -14,6 +14,7 @@ const locale = (Astro.locals.lang as "en" | "fr") ?? "en";
 		<title>{Astro.props.title || "SVG Generator"}</title>
 	</head>
 	<body class="min-h-screen flex flex-col">
+
 		<div class="flex-grow flex flex-col">
 			<slot />
 		</div>
